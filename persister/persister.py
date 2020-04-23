@@ -1,3 +1,8 @@
+import os
+import tempfile
+from datetime import datetime
+
+import boto3
 
 
 def handler(event, context):
@@ -8,5 +13,9 @@ def handler(event, context):
 def save(content: [bytes, bytearray], file_name):
     print("Saving content to [{}]...".format(file_name))
     print("Content received [{}]".format(content))
-    with open(file_name, "wb+") as file:
-        file.write(content)
+    tmp = tempfile.NamedTemporaryFile()
+    with open(tmp.name, 'w') as f:
+        f.write(content)
+    s3 = boto3.resource('s3')
+    s3.Bucket(os.environ['bucket_name']).upload_file(tmp.name,
+                                                     "{}/{}".format(datetime.today().strftime('%Y-%m-%d'), file_name))

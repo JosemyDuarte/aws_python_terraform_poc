@@ -1,1 +1,1 @@
-echo "Nothing to do..."
+pip install -r requirements.txt -t .
